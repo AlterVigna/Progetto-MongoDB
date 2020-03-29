@@ -309,10 +309,15 @@ public class GestoreRisorse {
 		ordinamento.put("num_recensioni", -1);
 		ordinamento.put("media_voto", -1);
 		Bson order = Aggregates.sort(ordinamento);
-
+		
+		long init = System.currentTimeMillis();
+		
 		AggregateIterable<Document> result = GestoreRisorse.getDatabase().getCollection("film")
 				.aggregate(Arrays.asList(match, order));
-
+		
+		long end = System.currentTimeMillis();
+		System.out.println("Tempo impiegato nella QueryStat1 : " + (end - init) + " ms");
+		
 		for (Document dbObject : result) {
 			Statistiche sus = new Statistiche(dbObject, GestoreRisorse.RUOLO_STANDARD);
 			listaStatistiche.add(sus);
