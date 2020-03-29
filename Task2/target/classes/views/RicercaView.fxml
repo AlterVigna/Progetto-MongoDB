@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="558.0" prefWidth="1346.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RicercaController">
+   <top>
+      <BorderPane prefHeight="233.0" prefWidth="1346.0" BorderPane.alignment="CENTER">
+         <left>
+            <HBox prefHeight="166.0" prefWidth="723.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Pane prefHeight="183.0" prefWidth="27.0" />
+                  <VBox prefHeight="148.0" prefWidth="680.0" style="-fx-border: #000000;">
+                     <children>
+                        <Label prefHeight="21.0" prefWidth="113.0" text="Ricerca">
+                           <font>
+                              <Font name="Broadway" size="18.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="219.0" prefWidth="680.0" style="-fx-border-color: #000000;">
+                           <children>
+                              <Pane prefHeight="137.0" prefWidth="21.0" />
+                              <VBox prefHeight="91.0" prefWidth="188.0">
+                                 <children>
+                                    <Pane prefHeight="14.0" prefWidth="215.0" />
+                                    <Label prefHeight="17.0" prefWidth="73.0" text="Nome Film" />
+                                    <TextField fx:id="nomeFilmRicercaTF" prefHeight="10.0" prefWidth="215.0" />
+                                    <Pane prefHeight="9.0" prefWidth="188.0" />
+                                    <Label text="Anno" />
+                                    <TextField fx:id="annoRicercaTF" />
+                                 </children>
+                              </VBox>
+                              <Pane prefHeight="137.0" prefWidth="34.0" />
+                              <VBox prefHeight="137.0" prefWidth="188.0">
+                                 <children>
+                                    <Pane prefHeight="14.0" prefWidth="215.0" />
+                                    <Label prefHeight="17.0" prefWidth="73.0" text="Genere" />
+                                    <ComboBox fx:id="comboGenere" prefHeight="25.0" prefWidth="192.0" />
+                                    <Pane prefHeight="10.0" prefWidth="188.0" />
+                                    <Label prefHeight="17.0" prefWidth="157.0" text="Durata (inferiore a)" />
+                                    <TextField fx:id="durataRicercaTF" />
+                                 </children>
+                              </VBox>
+                              <Pane prefHeight="137.0" prefWidth="42.0" />
+                              <VBox prefHeight="137.0" prefWidth="188.0">
+                                 <children>
+                                    <Pane prefHeight="31.0" prefWidth="188.0" />
+                                    <Button fx:id="btnAggiungi" mnemonicParsing="false" prefHeight="25.0" prefWidth="139.0" text="Aggiungi" />
+                                    <Pane prefHeight="27.0" prefWidth="188.0" />
+                                    <Button fx:id="btnRicerca" mnemonicParsing="false" prefHeight="25.0" prefWidth="139.0" text="Ricerca" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="84.0" prefWidth="680.0">
+                           <children>
+                              <Label fx:id="lblPag" prefHeight="25.0" prefWidth="197.0" text="Num Film totali" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </VBox>
+               </children>
+            </HBox>
+         </left>
+         <right>
+            <HBox BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="168.0" prefWidth="572.0" style="-fx-border: #000000;">
+                     <children>
+                        <Label prefHeight="21.0" prefWidth="113.0" text="Statistiche">
+                           <font>
+                              <Font name="Broadway" size="18.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="139.0" prefWidth="534.0" style="-fx-border-color: #000000;">
+                           <children>
+                              <Pane prefHeight="137.0" prefWidth="17.0" />
+                              <VBox prefHeight="137.0" prefWidth="293.0">
+                                 <children>
+                                    <Pane prefHeight="33.0" prefWidth="293.0" />
+                                    <Label fx:id="lblStat1" prefHeight="17.0" prefWidth="310.0" text="Film maggiormente recensiti" />
+                                    <Pane prefHeight="30.0" prefWidth="293.0" />
+                                    <Label fx:id="lblStat2" prefHeight="17.0" prefWidth="310.0" text="Migliori film per anno" />
+                                 </children>
+                              </VBox>
+                              <Pane prefHeight="137.0" prefWidth="54.0" />
+                              <VBox prefHeight="84.0" prefWidth="160.0">
+                                 <children>
+                                    <Pane prefHeight="31.0" prefWidth="160.0" />
+                                    <Button fx:id="btnStat1" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text=" Most reviewed" />
+                                    <Pane prefHeight="24.0" prefWidth="160.0" />
+                                    <Button fx:id="btnStat2" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Best by Year" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </VBox>
+                  <Pane prefHeight="173.0" prefWidth="15.0" />
+               </children>
+            </HBox>
+         </right>
+         <top>
+            <BorderPane prefHeight="49.0" prefWidth="1346.0" BorderPane.alignment="CENTER">
+               <right>
+                  <HBox prefHeight="36.0" prefWidth="1346.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Pane prefHeight="30.0" prefWidth="1089.0" />
+                        <Label fx:id="lblUsername" prefHeight="30.0" prefWidth="154.0">
+                           <font>
+                              <Font name="Broadway" size="14.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="btnLogout" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Logout" textAlignment="JUSTIFY" />
+                     </children>
+                  </HBox>
+               </right>
+               <top>
+                  <Pane prefHeight="19.0" prefWidth="1346.0" BorderPane.alignment="CENTER" />
+               </top>
+            </BorderPane>
+         </top>
+      </BorderPane>
+   </top>
+   <right>
+      <Pane prefHeight="324.0" prefWidth="13.0" BorderPane.alignment="CENTER" />
+   </right>
+   <left>
+      <Pane prefHeight="288.0" prefWidth="27.0" BorderPane.alignment="CENTER" />
+   </left>
+   <center>
+      <TableView fx:id="tabellaFilm" nodeOrientation="LEFT_TO_RIGHT" prefHeight="329.0" prefWidth="1346.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="colOpzioni" prefWidth="277.0000305175781" sortable="false" text="Opzioni" />
+          <TableColumn fx:id="colNomeFilm" minWidth="0.0" prefWidth="207.0" text="Nome Film" />
+            <TableColumn fx:id="colAnno" minWidth="0.0" prefWidth="52.0" text="Anno" />
+            <TableColumn fx:id="colGenere" prefWidth="326.0" sortable="false" text="Genere" />
+            <TableColumn fx:id="colDurata" prefWidth="77.0" text="Durata" />
+            <TableColumn fx:id="colDataUscita" prefWidth="111.0" text="Data uscita Film" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </center>
+</BorderPane>

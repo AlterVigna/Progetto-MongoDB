@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="558.0" prefWidth="747.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MostraStatisticheController">
+   <center>
+      <TableView fx:id="tabellaStat" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="colUtente" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Utente" />
+          <TableColumn fx:id="colTotNumRec" prefWidth="155.0" style="-fx-alignment: CENTER;" text="Recensioni Effettuate" />
+            <TableColumn fx:id="colNumRecPos" prefWidth="143.0" style="-fx-alignment: CENTER;" text="Positive" />
+            <TableColumn fx:id="colNumRecNeg" prefWidth="234.0" style="-fx-alignment: CENTER;" text="Negative" />
+            <TableColumn fx:id="colMediaRec" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Media" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </center>
+   <top>
+      <BorderPane prefHeight="60.0" prefWidth="747.0" BorderPane.alignment="CENTER">
+         <center>
+            <VBox alignment="CENTER" prefHeight="60.0" prefWidth="686.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="lblStringaDesQuery" prefHeight="63.0" prefWidth="767.0" style="-fx-wrap-text: true;" textAlignment="CENTER" textOverrun="WORD_ELLIPSIS" />
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </top>
+</BorderPane>
