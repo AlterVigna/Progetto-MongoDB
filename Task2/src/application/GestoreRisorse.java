@@ -346,9 +346,13 @@ public class GestoreRisorse {
 		// {"anno": 1}}).pretty()
 
 		List<Statistiche> listaStatistiche = new ArrayList<Statistiche>();
-
+		long init = System.currentTimeMillis();
+		
 		Bson match = Aggregates.match(Filters.and(Filters.gt("num_recensioni", 5)));
-
+		
+		long end = System.currentTimeMillis();
+		System.out.println("Tempo impiegato nella QueryStat1 : " + (end - init) + " ms");
+		
 		BasicDBObject ordinamento = new BasicDBObject();
 		ordinamento.put("media_voto", -1);
 		ordinamento.put("num_recensioni", -1);
