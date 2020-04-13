@@ -3,7 +3,6 @@ package controller;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBObject;
 import application.GestoreRisorse;
 import container.RigaRecensioni;
 import javafx.event.ActionEvent;
@@ -84,17 +83,19 @@ public class ModificaRecensioneController {
 				 d.put("username",GestoreRisorse.getUtenteCorrente().getUsername());
 				 d.put("id_film",idFilm);
 				 
-				 GestoreRisorse.inserisciRecensione(d,idFilm);
+				 GestoreRisorse.inserisciRecensione(d);
 			 }
 			
 			 if (modalita==GestoreRisorse.MODIFICA_RECENSIONE) {
 				 
 				 d.put("_id",idRecensione);	 
 				 
-				 BasicDBObject updateDocument = new BasicDBObject();
-				 updateDocument.append("$set", new BasicDBObject().append("voto",spinnerVoto.getValue()).append("commento", textCommento.getText()));
+				 Document doc= new Document();
+				 doc.put("voto",spinnerVoto.getValue());
+				 doc.put("commento",textCommento.getText());
 				 
-				 GestoreRisorse.aggiornaRecensione(idRecensione,updateDocument,idFilm);
+
+				 GestoreRisorse.aggiornaRecensione(idRecensione,d,idFilm);
 			 }
 
 			if (modalita==GestoreRisorse.MODIFICA_RECENSIONE){

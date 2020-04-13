@@ -8,7 +8,6 @@ import java.util.Iterator;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBObject;
 
 import application.GestoreRisorse;
 import container.RigaFilm;
@@ -121,6 +120,10 @@ public class ModificaFilmController {
 		if (!comboGenere.getSelectionModel().getSelectedItem().equals("")) {
 			d.put("genere",Arrays.asList(comboGenere.getSelectionModel().getSelectedItem()));
 		}
+		else {
+			System.err.println("Genere mancante");
+			return;
+		}
 		
 		String paesi=paesiProdTF.getText();
 		String[] splittati = paesi.split(",");
@@ -150,9 +153,8 @@ public class ModificaFilmController {
 		else {
 			//Update
 			d.put("_id", idFilm);
-			BasicDBObject updateDocument = new BasicDBObject();
-			updateDocument.append("$set", d);
-			GestoreRisorse.aggiornaFilm(idFilm, updateDocument);
+			
+			GestoreRisorse.aggiornaFilm(idFilm, d);
 		}
 		Film film= new Film(d);
 		RicercaController.aggiornaRigaVideo(new RigaFilm(film));

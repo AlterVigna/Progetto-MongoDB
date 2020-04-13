@@ -15,7 +15,7 @@ import application.GestoreRisorse;
  * @author Davide Vigna
  *
  */
-public class Statistiche {
+public class Statistica {
 
 	// campi per statistiche standard
 	private Integer anno;
@@ -33,7 +33,7 @@ public class Statistiche {
 	
 	
 	
-	public Statistiche (Document d,String tipologia) {
+	public Statistica (Document d,String tipologia) {
 		if (d!=null) {
 			
 			if (tipologia.equals(GestoreRisorse.RUOLO_STANDARD)) {

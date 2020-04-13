@@ -83,7 +83,8 @@ public class AutenticazioneController {
 				RicercaController controller = fxmlLoader.<RicercaController>getController();
 				
 				controller.setLblUsername(usernameTF.getText());
-				
+				controller.setNumDocumentiTrovati(GestoreRisorse.NUM_FILM_CARICAMENTO_INIZIALE);
+				controller.setLabelNumeroFilmTrovati();
 				RicercaController.getListafilm().clear();
 				List<RigaFilm> listFilm = RigaFilm.ottieniListaRighe(GestoreRisorse.caricaUltimiNFilm(GestoreRisorse.NUM_FILM_CARICAMENTO_INIZIALE));
 				RicercaController.getListafilm().addAll(listFilm);

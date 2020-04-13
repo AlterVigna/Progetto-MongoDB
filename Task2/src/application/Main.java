@@ -25,7 +25,7 @@ public class Main extends Application {
 		
 			Scene scene = new Scene(root,850,600);
 			primaryStage.setScene(scene);
-			primaryStage.setTitle("Let's Movie - Autenticazione" );
+			primaryStage.setTitle("Let's Movie - Autenticazione");
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

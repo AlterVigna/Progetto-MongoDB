@@ -33,7 +33,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Film;
 import model.Recensione;
-import model.Statistiche;
+import model.Statistica;
 
 /**
  * Classe per la ricerca e visualizzazione dei film. Gestione delle statistiche
@@ -206,7 +206,7 @@ public class RicercaController {
 		if (!durataRicercaTF.getText().trim().equals("")) {
 			try {
 				int durata = Integer.parseInt(durataRicercaTF.getText().trim());
-				selectQuery.append("durata_min", new BasicDBObject("$lte", durata));
+				selectQuery.append("durata_min", new BasicDBObject("$lt", durata));
 			} catch (NumberFormatException ex) {
 				System.err.println("Formato durata errato");
 			}
@@ -223,13 +223,15 @@ public class RicercaController {
 	private void ricercaFilm() {
 
 		BasicDBObject selectQuery = filtraRisultati();
-		long numDoc = GestoreRisorse.numeroFilmRicercati(selectQuery);
-
-		setNumDocumentiTrovati(numDoc);
-		setLabelNumeroFilmTrovati();
+		
 
 		listaFilm.clear();
-		listaFilm.addAll(RigaFilm.ottieniListaRighe(GestoreRisorse.effettuaQueryRicercaFilm(selectQuery)));
+		List<Film> lista = GestoreRisorse.effettuaQueryRicercaFilm(selectQuery);
+		listaFilm.addAll(RigaFilm.ottieniListaRighe(lista));
+		
+		long numDoc=lista.size();
+		setNumDocumentiTrovati(numDoc);
+		setLabelNumeroFilmTrovati();
 	}
 
 	/**
@@ -242,17 +244,17 @@ public class RicercaController {
 	}
 
 	/**
-	 * Effttua l'eliminazione di un film, sia sull'unità persistente che nella tabella a video.
+	 * Effttua l'eliminazione di un film, sia sull'unità persistente che nella
+	 * tabella a video.
+	 * 
 	 * @param idFilm L'id del film che deve essere cancellato.
 	 */
 	public static void rimuoviFilm(ObjectId idFilm) {
-		BasicDBObject deleteQuery= new BasicDBObject();
-		deleteQuery.put("_id", idFilm);
-		GestoreRisorse.rimuoviFilm(deleteQuery);
+
+		GestoreRisorse.rimuoviFilm(idFilm);
 		RicercaController.rimuoviRigaVideo(idFilm);
 	}
-	
-	
+
 	// Metodi per l'apertura di nuove interfacce
 
 	/**
@@ -371,12 +373,18 @@ public class RicercaController {
 
 				controller.setLblTitolo(f.getNomeFilm());
 				controller.setLblGenere(f.getTuttiGeneriStringa());
-				controller.setLblDataDiUscita(f.getDataUscita().toString());
-				controller.setLblDurata(f.getDurata() + " Minuti");
+				if (f.getDataUscita() != null)
+					controller.setLblDataDiUscita(f.getDataUscita().toString());
+				if (f.getDurata() != null)
+					controller.setLblDurata(f.getDurata() + " Minuti");
+				else
+					controller.setLblDurata(" -- Minuti");
 				controller.setLblPaesiProduzione(f.getTuttiPaesiProduzioneStringa());
 				controller.setTextTramaCompleta(f.getTramaCompleta());
-				controller.setLblNumRec(f.getNumRecensioni() + "");
-				controller.setLblMediaVoto(Math.round(f.getMediaVoto() * 100.0) / 100.0 + "");
+				if (f.getNumRecensioni() != null)
+					controller.setLblNumRec(f.getNumRecensioni() + "");
+				if (f.getMediaVoto() != null)
+					controller.setLblMediaVoto(Math.round(f.getMediaVoto() * 100.0) / 100.0 + "");
 				controller.getListaCast().addAll(f.getListaCast());
 
 				Scene scene = new Scene(root, 600, 632);
@@ -399,7 +407,8 @@ public class RicercaController {
 	 * l'interfaccia per un nuovo inserimento.
 	 * 
 	 * 
-	 * @param idRecensione L'id della recensione che si va a modificare. Mettere null quando si entra in inserimento.
+	 * @param idRecensione L'id della recensione che si va a modificare. Mettere
+	 *                     null quando si entra in inserimento.
 	 * @param idFilm       L'id del film associato alla recensione che si va a
 	 *                     dettagliare.
 	 * @param nomeFilm     Il nome del film associato alla recensione.
@@ -445,40 +454,41 @@ public class RicercaController {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Implementa l'apertura dell'interfaccia per la mostra di tutte le recensioni relative ad un film.
-	 * @param f Il model del film di cui si vogliono vedere tutte le recensioni associate.
+	 * Implementa l'apertura dell'interfaccia per la mostra di tutte le recensioni
+	 * relative ad un film.
+	 * 
+	 * @param f Il model del film di cui si vogliono vedere tutte le recensioni
+	 *          associate.
 	 */
 	public static void apriInterfacciaMostraTutteLeRecensioniDiFilm(Film f) {
-		
-		 try {						
-			 	BasicDBObject selectQuery = new BasicDBObject();
-				selectQuery.append("id_film", f.getId());
-			 
-				List<RigaRecensioni> listaRecensioni=RigaRecensioni.ottieniListaRighe(GestoreRisorse.effettuaQueryRicercaRecensioni(selectQuery),f.getNomeFilm());
-			 
-				FXMLLoader fxmlLoader  = new FXMLLoader(RicercaController.class.getResource("/views/MostraRecensioniView.fxml")); 
-				Parent root = (Parent) fxmlLoader.load();  
-				
-				MostraRecensioniController controller = fxmlLoader.<MostraRecensioniController>getController();
 
-				controller.getListaRecensioni().addAll(listaRecensioni);
-				Scene scene = new Scene(root,1450,600);
-				
-			    Stage stage = new Stage();
-				stage.setScene(scene);
-				stage.setTitle("Mostra tutte recensioni Film -"+ f.getNomeFilm());
-				stage.show();
-				
-			} catch(Exception e) {
-				e.printStackTrace();
-			}	
+		try {
+			BasicDBObject selectQuery = new BasicDBObject();
+			selectQuery.append("id_film", f.getId());
+
+			List<RigaRecensioni> listaRecensioni = RigaRecensioni
+					.ottieniListaRighe(GestoreRisorse.effettuaQueryRicercaRecensioni(selectQuery), f.getNomeFilm());
+
+			FXMLLoader fxmlLoader = new FXMLLoader(
+					RicercaController.class.getResource("/views/MostraRecensioniView.fxml"));
+			Parent root = (Parent) fxmlLoader.load();
+
+			MostraRecensioniController controller = fxmlLoader.<MostraRecensioniController>getController();
+
+			controller.getListaRecensioni().addAll(listaRecensioni);
+			Scene scene = new Scene(root, 1450, 600);
+
+			Stage stage = new Stage();
+			stage.setScene(scene);
+			stage.setTitle("Mostra tutte recensioni Film -" + f.getNomeFilm());
+			stage.show();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
-	
-	
-	
 
 	/**
 	 * Implementa l'apertura dell'interfaccia per la mostra delle statistiche.
@@ -492,7 +502,7 @@ public class RicercaController {
 	 *                            da GestoreRisorse.RUOLO_STANDARD,
 	 *                            GestoreRisorse.RUOLO_ADMIN.
 	 */
-	public static void apriInterfacciaStatistiche(List<Statistiche> lista, String titoloFinestra,
+	public static void apriInterfacciaStatistiche(List<Statistica> lista, String titoloFinestra,
 			String labelDaVisualizzare, String tipologia) {
 		try {
 
@@ -527,7 +537,7 @@ public class RicercaController {
 	 */
 	public static void apriInterfacciaStatisticheFilmPiuRecensiti() {
 
-		List<Statistiche> listaStat = GestoreRisorse.statisticheMostReviewed();
+		List<Statistica> listaStat = GestoreRisorse.statisticheMostReviewed();
 
 		if (!listaStat.isEmpty()) {
 
@@ -544,7 +554,7 @@ public class RicercaController {
 	 */
 	public static void apriInterfacciaStatisticheMiglioriPerAnno() {
 
-		List<Statistiche> listaStat = GestoreRisorse.statisticheBestByYear();
+		List<Statistica> listaStat = GestoreRisorse.statisticheBestByYear();
 
 		if (!listaStat.isEmpty()) {
 
@@ -562,7 +572,7 @@ public class RicercaController {
 	 */
 	public static void apriInterfacciaStatisticheDettaglioRecensioniPerUtente() {
 
-		List<Statistiche> listaStat = GestoreRisorse.statisticheDetailReviews();
+		List<Statistica> listaStat = GestoreRisorse.statisticheDetailReviews();
 		if (!listaStat.isEmpty()) {
 
 			String titoloFinestra = "Let's Movie - Statistiche - Detail Reviews";
@@ -575,9 +585,8 @@ public class RicercaController {
 	// Metodi per la gestione della TableView
 
 	/**
-	 * Metodo per l'aggiornamento di una riga all'interno della lista dei film. 
-	 * Se il film non si trova all'interno viene aggiunto
-	 * in fondo alla lista.
+	 * Metodo per l'aggiornamento di una riga all'interno della lista dei film. Se
+	 * il film non si trova all'interno viene aggiunto in fondo alla lista.
 	 * 
 	 * @param riga La riga che viene aggiornata o aggiunta.
 	 */
@@ -634,8 +643,6 @@ public class RicercaController {
 			return cell;
 		});
 	}
-
-	
 
 	// Getter e Setter per impostare contenuti componenti grafici
 	public void setLblUsername(String text) {

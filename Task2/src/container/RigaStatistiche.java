@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import model.Statistiche;
+import model.Statistica;
 
 
 /**
@@ -16,9 +16,9 @@ import model.Statistiche;
 public class RigaStatistiche {
 	
 	
-	private Statistiche model;
+	private Statistica model;
 
-	public RigaStatistiche(Statistiche model) {
+	public RigaStatistiche(Statistica model) {
 		this.model=model;
 	}
 	
@@ -28,11 +28,11 @@ public class RigaStatistiche {
 	 * @param lista La lista di model Film
 	 * @return Lista di container RigaStatistiche
 	 */
-	public static List<RigaStatistiche> ottieniListaRighe(List<Statistiche> lista){
+	public static List<RigaStatistiche> ottieniListaRighe(List<Statistica> lista){
 		List<RigaStatistiche> listaRighe= new ArrayList<RigaStatistiche>();
 		
-		for (Iterator<Statistiche> iterator = lista.iterator(); iterator.hasNext();) {
-			Statistiche model = (Statistiche) iterator.next();
+		for (Iterator<Statistica> iterator = lista.iterator(); iterator.hasNext();) {
+			Statistica model = (Statistica) iterator.next();
 			listaRighe.add(new RigaStatistiche(model));
 		}
 		return listaRighe;
@@ -40,11 +40,11 @@ public class RigaStatistiche {
 	
 	
 	
-	public Statistiche getModel() {
+	public Statistica getModel() {
 		return model;
 	}
 
-	public void setModel(Statistiche model) {
+	public void setModel(Statistica model) {
 		this.model = model;
 	}
 
