@@ -61,7 +61,7 @@
                         <Label prefHeight="17.0" prefWidth="66.0" text="Genere" />
                         <ComboBox fx:id="comboGenere" prefHeight="25.0" prefWidth="176.0" />
                         <Pane prefHeight="25.0" prefWidth="179.0" />
-                        <Label layoutX="10.0" layoutY="10.0" prefHeight="17.0" prefWidth="66.0" text="Data Uscita" />
+                        <Label layoutX="10.0" layoutY="10.0" prefHeight="21.0" prefWidth="184.0" text="Data Uscita" />
                         <DatePicker fx:id="dataUscitaDP" />
                      </children>
                   </VBox>

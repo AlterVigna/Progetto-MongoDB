@@ -36,17 +36,17 @@
             <VBox prefHeight="117.0" prefWidth="234.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Username" />
-                  <TextField fx:id="usernameTF"/>
+                  <TextField fx:id="usernameTF" />
                   <Pane prefHeight="16.0" prefWidth="233.0" />
-                  <Label prefHeight="25.0" prefWidth="50.0" text="Password" />
-                  <PasswordField fx:id="passwordTF"/>
+                  <Label prefHeight="21.0" prefWidth="233.0" text="Password" />
+                  <PasswordField fx:id="passwordTF" />
                   <Pane prefHeight="22.0" prefWidth="207.0">
                      <children>
                         <Label fx:id="lblCredErrate" layoutY="-1.0" prefHeight="17.0" prefWidth="206.0" text="Credenziali errate" textFill="RED" visible="false" />
                      </children></Pane>
                   <HBox alignment="CENTER" prefHeight="49.0" prefWidth="207.0">
                      <children>
-                        <Button fx:id="btnAccedi" contentDisplay="CENTER" mnemonicParsing="false"  prefHeight="26.0" prefWidth="111.0" text="ACCEDI" textAlignment="CENTER" />
+                        <Button fx:id="btnAccedi" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="111.0" text="ACCEDI" textAlignment="CENTER" />
                      </children>
                   </HBox>
                </children>

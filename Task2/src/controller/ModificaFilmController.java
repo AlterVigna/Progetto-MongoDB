@@ -105,19 +105,22 @@ public class ModificaFilmController {
 	public void inserisciModificaFilm() {
 		
 		Document d= new Document();
-		
+		if ("".equals(titoloTF.getText().trim())){
+			System.err.println("Titolo mancante");
+			return;
+		}
 		d.put("nome",titoloTF.getText());
 		try {
 			int anno=Integer.parseInt(annoTF.getText());
 			d.put("anno",anno);
 		}
 		catch(Exception e) {
-			System.err.println("Conversione anno errata!");
+			System.err.println(" Anno assente oppure conversione anno errata!");
 		}
 		
 		d.put("tramaCompleta",tramaCompletaTA.getText());
 		
-		if (!comboGenere.getSelectionModel().getSelectedItem().equals("")) {
+		if (comboGenere.getSelectionModel().getSelectedItem()!=null && !comboGenere.getSelectionModel().getSelectedItem().equals("")) {
 			d.put("genere",Arrays.asList(comboGenere.getSelectionModel().getSelectedItem()));
 		}
 		else {
@@ -130,15 +133,17 @@ public class ModificaFilmController {
 		if (splittati!=null && splittati.length>0) {
 			d.put("paesi_prod", Arrays.asList(splittati));
 		}
-		
-		try {
-			int durata=Integer.parseInt(durataTF.getText());
-			d.put("durata_min",durata);
+		if (durataTF.getText()!=null) {
+			try {
+				int durata=Integer.parseInt(durataTF.getText());
+				d.put("durata_min",durata);
+			}
+			catch(Exception e) {
+				
+				System.err.println(" Durata assente oppure conversione durata errata!");
+			}
 		}
-		catch(Exception e) {
-			System.err.println("Conversione anno errata!");
-		}
-		
+
 		if(dataUscitaDP.getValue()!=null) {
 			ZoneId defaultZoneId = ZoneId.systemDefault();
 			Date date = Date.from(dataUscitaDP.getValue().atStartOfDay(defaultZoneId).toInstant());
