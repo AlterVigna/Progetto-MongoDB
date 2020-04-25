@@ -1,0 +1,104 @@
+//creato da me
+mongoimport --db=DB_TASK2 --collection=utenti --file=ds0_utenti.json 
+
+// scaricati da https://www.kaggle.com
+mongoimport --db DB_TASK2 --collection=recensioni  --type csv --file ds1_recensioni.csv --headerline
+mongoimport --db DB_TASK2 --collection=recensioni  --type csv --file ds2_recensioni.csv --headerline
+mongoimport --db DB_TASK2 --collection=recensioni  --type csv --file ds3_recensioni.csv --headerline
+
+// ottenuto da Web scraping and crawling 
+mongoimport --db=DB_TASK2 --collection=film --file=ds3_film.json  
+
+db.recensioni.find({"sentiment": {$eq : "positive"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.round(((Math.random() * (4) +6))*10)/10}})
+})
+
+db.recensioni.find({"sentiment": {$eq : "negative"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.floor(((Math.random() * (6)))*10)/10}})
+})
+
+db.recensioni.find({"label": {$eq : "neg"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.floor(((Math.random() * (6)))*10)/10}})
+})
+
+db.recensioni.find({"label": {$eq : "pos"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.round(((Math.random() * (4) +6))*10)/10}})
+})
+
+db.recensioni.find({"label": {$eq : "unsup"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.round(((Math.random() * (1) +5.5))*10)/10}})
+})
+
+db.recensioni.find({"tag": {$eq : "pos"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.round(((Math.random() * (4) +6))*10)/10}})
+})
+db.recensioni.find({"tag": {$eq : "neg"}}).forEach(function(recensioni) {
+  db.recensioni.update({_id: recensioni._id}, {$set: {voto: Math.floor(((Math.random() * (6)))*10)/10}})
+})
+
+
+
+db.recensioni.updateMany({},{ $unset: { "tag":"","sentiment":"","type":"","numero":"","file":"","label":"","fold_id":"", "cv_tag":"","html_id":"","sent_id":""}})
+db.recensioni.updateMany({}, { $rename: { "text": "commento"}})
+db.recensioni.updateMany({}, { $rename: { "review": "commento"}})
+
+
+// Imposto l'id_utente su Utenti
+var i=0;
+db.utenti.find({}).forEach(function(utenti) {
+  db.utenti.update({_id: utenti._id}, {$set: {id_utente: ++i}})
+})
+
+
+// Imposto l'id_film su Film
+i=0;
+db.film.find({}).forEach(function(film) {
+  db.film.update({_id: film._id}, {$set: {id_film: ++i}})
+})
+
+
+// PER CIASCUNA RECENSIONE ASSOCIO CON UN UTENTE CASUALE
+db.recensioni.find({}).forEach(function(recensioni){
+	var num_casuale=Math.floor(((Math.random() * (29)+1)))
+	var cursor=db.utenti.find({"id_utente":num_casuale});
+	var doc=cursor.hasNext()?cursor.next():null;
+	if (doc!=null) db.recensioni.update({_id:recensioni._id}, {$set: {"id_utente":doc._id,username:doc.username}});
+}).noCursorTimeout()
+
+db.utenti.updateMany({},{ $unset: { "id_utente":""}})
+
+
+// PER CIASCUNA RECENSIONE ASSOCIO UN FILM CASUALE -- 54341 num totale di film
+db.recensioni.find().forEach(function(recensioni){
+	var num_casuale=Math.floor(((Math.random() * (54340)+1)))
+	var cursor=db.film.find({"id_film":num_casuale});
+	var doc= cursor.hasNext()?cursor.next():null;
+	if (doc!=null) db.recensioni.update({_id:recensioni._id}, {$set: {"id_film":doc._id}});
+})
+db.film.updateMany({},{ $unset: { "id_film":""}})
+
+
+// CALCOLO LA MEDIA E IL NUMERO DI RECENSIONI CHE HA RICEVUTO CIASCUN FILM
+db.film.find().forEach(function(film) {
+	var cursor=db.recensioni.aggregate({$match: {"id_film": film._id}},{$group: {_id:"$id_film", media:{$avg:"$voto"},count:{$sum:1}}});
+	var doc= cursor.hasNext()?cursor.next():null;
+	if (doc!=null) db.film.update({_id:film._id}, {$set: {num_recensioni:doc.count, media_voto:doc.media}});
+})
+
+
+
+//FORMATO CSV
+
+mongoexport --collection="recensioni" --db="DB_TASK2" --type="csv"  --fields _id,commento,voto,id_film,id_utente --out="ds_recensioni.csv"
+mongoexport --collection="film" --db="DB_TASK2" --type="csv"  --fields _id,nome,anno,tramaCompleta,genere,paesi_prod,durata_min,cast --out="ds_film.csv"
+mongoexport --collection="utenti" --db="DB_TASK2" --type="csv"  --fields _id,id_utente,username,password,ruolo --out="ds_utenti.csv"
+
+//FORMATO JSON
+
+mongoexport --collection="recensioni" --db="DB_TASK2" --type="json" --out="ds_recensioni.json" 
+mongoexport --collection="film" --db="DB_TASK2" --type="json" --out="ds_film.json" 
+mongoexport --collection="utenti" --db="DB_TASK2" --type="json" --out="ds_utenti.json" 
+
+
+
+

@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.Film;
 import model.Utente;
 
 /**
@@ -47,6 +48,7 @@ public class AutenticazioneController {
 		 btnAccedi.setOnAction((ActionEvent ev)->{
 			 gestisciAccesso();
 		 });
+		 GestoreRisorse.initConnection();
 	 }
 	 
 	 /**
@@ -85,10 +87,16 @@ public class AutenticazioneController {
 				controller.setLblUsername(usernameTF.getText());
 				controller.setNumDocumentiTrovati(GestoreRisorse.NUM_FILM_CARICAMENTO_INIZIALE);
 				controller.setLabelNumeroFilmTrovati();
-				RicercaController.getListafilm().clear();
-				List<RigaFilm> listFilm = RigaFilm.ottieniListaRighe(GestoreRisorse.caricaUltimiNFilm(GestoreRisorse.NUM_FILM_CARICAMENTO_INIZIALE));
-				RicercaController.getListafilm().addAll(listFilm);
 				
+				RicercaController.getListafilmcompleta().clear();
+				RicercaController.getListafilmavideo().clear();
+				
+				List<Film> listaFilm = GestoreRisorse.caricaUltimiNFilm(GestoreRisorse.NUM_FILM_CARICAMENTO_INIZIALE);
+				List<RigaFilm> listFilm = RigaFilm.ottieniListaRighe(listaFilm);
+				
+				RicercaController.getListafilmcompleta().addAll(GestoreRisorse.caricaUltimiNFilm(GestoreRisorse.NUM_FILM_CARICAMENTO_INIZIALE));
+				RicercaController.getListafilmavideo().addAll(listFilm);
+					
 				if (GestoreRisorse.getUtenteCorrente().getRuolo().equals(GestoreRisorse.RUOLO_STANDARD)) {
 
 					controller.setLblStat1("Film maggiormente recensiti");
@@ -121,8 +129,11 @@ public class AutenticazioneController {
 				}
 				Scene scene = new Scene(root,1350,760);
 				primaryStage.setScene(scene);
-				primaryStage.setTitle("Let's Movie - Autenticazione" );
+				primaryStage.setTitle("Let's Movie - Applicazione" );
 				primaryStage.show();
+				
+				controller.initScrollTable();
+				
 			} catch(Exception e) {
 				e.printStackTrace();
 			}

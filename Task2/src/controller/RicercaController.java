@@ -11,18 +11,21 @@ import com.mongodb.BasicDBObject;
 
 import application.GestoreRisorse;
 import container.RigaFilm;
-import container.RigaRecensioni;
-import container.RigaStatistiche;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -108,7 +111,13 @@ public class RicercaController {
 
 	private final ObservableList<String> listaGeneri = FXCollections.observableArrayList();
 
-	private final static ObservableList<RigaFilm> listaFilm = FXCollections.observableArrayList();
+	private final static List<Film> listaFilmCompleta = new ArrayList<Film>();
+	private final static ObservableList<RigaFilm> listaFilmAVideo = FXCollections.observableArrayList();
+
+	private int start = 0;
+	private int inc = GestoreRisorse.NUM_RIGHE_A_VIDEO;
+	private int end = inc;
+
 	private long numDocumentiTrovati;
 
 	public RicercaController() {
@@ -135,7 +144,7 @@ public class RicercaController {
 			addTooltipToColumnCells(column);
 		}
 
-		tabellaFilm.setItems(listaFilm);
+		tabellaFilm.setItems(listaFilmAVideo);
 
 		btnRicerca.setOnAction((ActionEvent ev) -> {
 			ricercaFilm();
@@ -148,6 +157,7 @@ public class RicercaController {
 		btnAggiungi.setOnAction((ActionEvent ev) -> {
 			apriInterfacciaInserisciFilm(null);
 		});
+
 	}
 
 	/**
@@ -171,6 +181,36 @@ public class RicercaController {
 		listaGeneri.add("Azione");
 		listaGeneri.add("Horror");
 		listaGeneri.add("Documentario");
+	}
+
+	/**
+	 * Metodo per la gestione dello scroll di tutte le righe nella tabella Film.
+	 * Questo metodo è stato introdotto per ridurre i tempi di attesa e soprattutto
+	 * l'utilizzo di memoria, per il popolamento e visualizzazione di un numero
+	 * elevato di righe a video. Ad ogni scroll viene visualizzata una sottolista di
+	 * record di listaFilmCompleta.
+	 */
+	public void initScrollTable() {
+
+		ScrollBar tableViewScrollBar = getTableViewScrollBar(tabellaFilm);
+		tableViewScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				double position = newValue.doubleValue();
+				ScrollBar scrollbar = getTableViewScrollBar(tabellaFilm);
+
+				if (position == scrollbar.getMax()) {
+					if (end <= listaFilmCompleta.size()) {
+
+						List<Film> sottoLista = listaFilmCompleta.subList(start, end);
+						listaFilmAVideo.addAll(RigaFilm.ottieniListaRighe(sottoLista));
+						start = end;
+						end += inc;
+						tabellaFilm.scrollTo(start);
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -223,13 +263,17 @@ public class RicercaController {
 	private void ricercaFilm() {
 
 		BasicDBObject selectQuery = filtraRisultati();
-		
 
-		listaFilm.clear();
-		List<Film> lista = GestoreRisorse.effettuaQueryRicercaFilm(selectQuery);
-		listaFilm.addAll(RigaFilm.ottieniListaRighe(lista));
+		listaFilmCompleta.clear();
+		listaFilmAVideo.clear();
 		
-		long numDoc=lista.size();
+		List<Film> lista = GestoreRisorse.effettuaQueryRicercaFilm(selectQuery);
+		listaFilmCompleta.addAll(lista);
+		
+		if (end<lista.size()) listaFilmAVideo.addAll(RigaFilm.ottieniListaRighe(lista.subList(0, end)));
+		else listaFilmAVideo.addAll(RigaFilm.ottieniListaRighe(lista.subList(0, lista.size())));
+		
+		long numDoc = lista.size();
 		setNumDocumentiTrovati(numDoc);
 		setLabelNumeroFilmTrovati();
 	}
@@ -468,22 +512,26 @@ public class RicercaController {
 			BasicDBObject selectQuery = new BasicDBObject();
 			selectQuery.append("id_film", f.getId());
 
-			List<RigaRecensioni> listaRecensioni = RigaRecensioni
-					.ottieniListaRighe(GestoreRisorse.effettuaQueryRicercaRecensioni(selectQuery), f.getNomeFilm());
-
+			List<Recensione> listaRecensioni=GestoreRisorse.effettuaQueryRicercaRecensioni(selectQuery);
+			
 			FXMLLoader fxmlLoader = new FXMLLoader(
 					RicercaController.class.getResource("/views/MostraRecensioniView.fxml"));
 			Parent root = (Parent) fxmlLoader.load();
 
 			MostraRecensioniController controller = fxmlLoader.<MostraRecensioniController>getController();
 
-			controller.getListaRecensioni().addAll(listaRecensioni);
+			MostraRecensioniController.getListarecensioniavideo().clear();
+			MostraRecensioniController.getListarecensionicompleta().clear();
+			
+			MostraRecensioniController.getListarecensionicompleta().addAll(listaRecensioni);
 			Scene scene = new Scene(root, 1450, 600);
 
 			Stage stage = new Stage();
 			stage.setScene(scene);
 			stage.setTitle("Mostra tutte recensioni Film -" + f.getNomeFilm());
 			stage.show();
+			
+			controller.initScrollTable(listaRecensioni, f.getNomeFilm());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -519,13 +567,21 @@ public class RicercaController {
 
 			MostraStatisticheController controller = fxmlLoader.<MostraStatisticheController>getController();
 			controller.setLblStringaDesQuery(labelDaVisualizzare);
-			controller.getListaStatistiche().addAll(RigaStatistiche.ottieniListaRighe(lista));
-
+			
+			controller.getListaStatisticheCompleta().clear();
+			controller.getListaStatistiche().clear();
+			
+			controller.getListaStatisticheCompleta().addAll(lista);
+			
+			
 			Scene scene = new Scene(root, 850, 600);
 			Stage stage = new Stage();
 			stage.setScene(scene);
 			stage.setTitle(titoloFinestra);
 			stage.show();
+			
+			controller.initScrollTable(lista);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -586,35 +642,65 @@ public class RicercaController {
 
 	/**
 	 * Metodo per l'aggiornamento di una riga all'interno della lista dei film. Se
-	 * il film non si trova all'interno viene aggiunto in fondo alla lista.
+	 * il film non si trova all'interno della lista viene aggiunto in fondo alla
+	 * lista. Viene fatto un controllo prima sulla lista dei film "nascosta", nel
+	 * caso non sia presente viene aggiunto in fondo. Poi viene controllato se in
+	 * quel momento è presente nella lista dei film visualizzati a video, nel caso
+	 * lo aggiorna.
 	 * 
 	 * @param riga La riga che viene aggiornata o aggiunta.
 	 */
 	public static void aggiornaRigaVideo(RigaFilm riga) {
+
+		List<Film> allFilms = new ArrayList<Film>();
 		List<RigaFilm> listaVideo = new ArrayList<RigaFilm>();
 		boolean trovato = false;
-		for (Iterator<RigaFilm> iterator = listaFilm.iterator(); iterator.hasNext();) {
+
+		for (Iterator<Film> iterator = listaFilmCompleta.iterator(); iterator.hasNext();) {
+			Film film = (Film) iterator.next();
+			if (film.getId().equals(riga.getModel().getId())) {
+				allFilms.add(film);
+				trovato = true;
+			} else {
+				allFilms.add(riga.getModel());
+			}
+		}
+		if (!trovato)
+			allFilms.add(riga.getModel());
+		
+		listaFilmCompleta.clear();
+		listaFilmCompleta.addAll(allFilms);
+		
+		for (Iterator<RigaFilm> iterator = listaFilmAVideo.iterator(); iterator.hasNext();) {
 			RigaFilm rigaFilm = (RigaFilm) iterator.next();
 			if (rigaFilm.getModel().getId().equals(riga.getModel().getId())) {
 				listaVideo.add(riga);
-				trovato = true;
+
 			} else {
 				listaVideo.add(rigaFilm);
 			}
 		}
-		if (!trovato)
-			listaVideo.add(riga);
-		listaFilm.clear();
-		listaFilm.addAll(listaVideo);
+		if (!trovato) listaVideo.add(new RigaFilm(riga.getModel()));
+
+		listaFilmAVideo.clear();
+		listaFilmAVideo.addAll(listaVideo);
 	}
 
 	/**
 	 * Metodo per la rimozione di una riga all'interno della lista dei film.
+	 * Prima controllo ed elimino nella lista dei film totali.
+	 * Poi controllo ed elimino se presente nella lista dei film visualizzati in questo momento a video.
 	 * 
 	 * @param idFilm L'id del film nella riga che deve essere rimosso.
 	 */
 	public static void rimuoviRigaVideo(ObjectId idFilm) {
-		for (ListIterator<RigaFilm> iterator = listaFilm.listIterator(); iterator.hasNext();) {
+		
+		for (Iterator<Film> iterator = listaFilmCompleta.listIterator(); iterator.hasNext();) {
+			Film film = (Film) iterator.next();
+			if (film.getId().equals(idFilm)) iterator.remove();
+		}
+		
+		for (ListIterator<RigaFilm> iterator = listaFilmAVideo.listIterator(); iterator.hasNext();) {
 			RigaFilm rigaFilm = (RigaFilm) iterator.next();
 			if (rigaFilm.getModel().getId().equals(idFilm)) {
 				iterator.remove();
@@ -642,6 +728,29 @@ public class RicercaController {
 			cell.setTooltip(tooltip);
 			return cell;
 		});
+	}
+
+	/**
+	 * Metodo per il reperimento della Scrollbar associata alla tabella, per
+	 * permettere di abilitare lo scrolling dinamico in caso di gestione molte righe
+	 * a video. Variabile start memorizza l'indice di inizio visualizzazione,
+	 * variabile inc di quanto incrementare, variabile end l'indice massimo di
+	 * visualizzazione.
+	 * 
+	 * @param listView La tabella di cui si vuole ottenere la scrollbar
+	 * @return ScrollBar della tabella inserita come parametro
+	 */
+	private ScrollBar getTableViewScrollBar(TableView<?> listView) {
+		ScrollBar scrollbar = null;
+		for (Node node : listView.lookupAll(".scroll-bar")) {
+			if (node instanceof ScrollBar) {
+				ScrollBar bar = (ScrollBar) node;
+				if (bar.getOrientation().equals(Orientation.VERTICAL)) {
+					scrollbar = bar;
+				}
+			}
+		}
+		return scrollbar;
 	}
 
 	// Getter e Setter per impostare contenuti componenti grafici
@@ -697,8 +806,12 @@ public class RicercaController {
 		return btnStat2;
 	}
 
-	public static ObservableList<RigaFilm> getListafilm() {
-		return listaFilm;
+	public static List<Film> getListafilmcompleta() {
+		return listaFilmCompleta;
+	}
+
+	public static ObservableList<RigaFilm> getListafilmavideo() {
+		return listaFilmAVideo;
 	}
 
 }

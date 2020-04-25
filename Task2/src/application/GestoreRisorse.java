@@ -42,10 +42,12 @@ public class GestoreRisorse {
 	public static Utente utenteCorrente;
 
 	// Costanti
+	//public static String INDIRIZZO_DATABASE ="mongodb://192.168.1.192:27017,192.168.1.191:27017,192.168.1.191:27018";
 	public static String INDIRIZZO_DATABASE = "mongodb://192.168.1.192:27017";
 	public static String NOME_DATABASE = "DB_TASK2";
 
 	public static int NUM_FILM_CARICAMENTO_INIZIALE = 20;
+	public static int NUM_RIGHE_A_VIDEO=25;
 	public static String RUOLO_ADMIN = "admin";
 	public static String RUOLO_STANDARD = "standard";
 	public static int AGGIUNGI_RECENSIONE = 1;
@@ -54,13 +56,20 @@ public class GestoreRisorse {
 	private static MongoClient mongoClient;
 	private static MongoDatabase database;
 
-	static {
-		GestoreRisorse.setMongoClient(MongoClients.create(INDIRIZZO_DATABASE));
-		GestoreRisorse.setDatabase(GestoreRisorse.getMongoClient().getDatabase(NOME_DATABASE));
+	
+	/** 
+	 * Inizializzo la connessione col database - set di replica
+	 */
+	public static void initConnection() {
+		if (GestoreRisorse.getMongoClient()==null && GestoreRisorse.getDatabase()==null) {
+			GestoreRisorse.setMongoClient(MongoClients.create(INDIRIZZO_DATABASE));
+			GestoreRisorse.setDatabase(GestoreRisorse.getMongoClient().getDatabase(NOME_DATABASE));
+		}
 	}
-
-	// Funzione richiamate in più punti
-
+	
+	
+	
+	// Funzione richiamata in più punti
 
 	/**
 	 * Calcola la media dei voti delle recensioni che un film ha ricevuto e il
