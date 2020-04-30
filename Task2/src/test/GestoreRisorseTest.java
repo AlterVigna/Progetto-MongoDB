@@ -53,7 +53,10 @@ public class GestoreRisorseTest {
 		 System.out.println("Inizio TEST di Gestore Risorse ... \n");
 		 try {
 			 	mongoClient=MongoClients.create(GestoreRisorse.INDIRIZZO_DATABASE);
-				database=GestoreRisorse.getMongoClient().getDatabase(GestoreRisorse.NOME_DATABASE); 
+				database=mongoClient.getDatabase(GestoreRisorse.NOME_DATABASE); 
+				
+				GestoreRisorse.setMongoClient(mongoClient);
+				GestoreRisorse.setDatabase(database);
 				if (mongoClient!=null && database!=null) {
 					 
 					 System.out.println("Connessione creata con successo");

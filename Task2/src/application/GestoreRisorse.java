@@ -42,17 +42,23 @@ public class GestoreRisorse {
 	public static Utente utenteCorrente;
 
 	// Costanti
+	
+	//accesso da locale
 	//public static String INDIRIZZO_DATABASE ="mongodb://192.168.1.192:27017,192.168.1.191:27017,192.168.1.191:27018";
-	public static String INDIRIZZO_DATABASE = "mongodb://192.168.1.192:27017";
+	
+	// accesso con ip pubblico
+	public static String INDIRIZZO_DATABASE = "mongodb://79.51.200.37:27016";
+	//public static String INDIRIZZO_DATABASE = "mongodb://79.51.200.37:27016,79.51.200.37:27017,79.51.200.37:27018";
 	public static String NOME_DATABASE = "DB_TASK2";
 
+	
 	public static int NUM_FILM_CARICAMENTO_INIZIALE = 20;
 	public static int NUM_RIGHE_A_VIDEO=25;
 	public static String RUOLO_ADMIN = "admin";
 	public static String RUOLO_STANDARD = "standard";
 	public static int AGGIUNGI_RECENSIONE = 1;
 	public static int MODIFICA_RECENSIONE = 2;
-
+ 
 	private static MongoClient mongoClient;
 	private static MongoDatabase database;
 
@@ -67,8 +73,7 @@ public class GestoreRisorse {
 		}
 	}
 	
-	
-	
+
 	// Funzione richiamata in più punti
 
 	/**
