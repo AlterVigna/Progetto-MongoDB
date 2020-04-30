@@ -117,6 +117,7 @@ public class ModificaRecensioneController {
 	 
 	/**
 	 * Metodo per il settaggio dello spinner manuale, cioè quando l'utente inserisce il voto da tastiera invece che cliccando sulle frecce.
+	 * @param <T> elemento generico
 	 * @param spinner L'elemento che si va a modificare
 	 */
 	private <T> void commitEditorText(Spinner<Double> spinner) {
